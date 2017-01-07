@@ -35,7 +35,6 @@ wss.on('connection', function connection(ws) {
 function send(ws, message, type="msg") {
     var msg = {'type':type, "content": message}
     var m = JSON.stringify(msg)
-//    console.log(m)
     ws.send(m);
 }
 
