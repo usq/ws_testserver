@@ -15,19 +15,31 @@ wss.on('connection', function connection(ws) {
     
     ws.on('message', function incoming(message) {
 	message = JSON.parse(message)
-	
-	console.log("")
-	console.log(message)
-	console.log("")
 
-	var resp =  message.data.clientid + ": " + message.data.textresponse
-	for (var i = 0; i < connectedChannels.length; i++) {
-	    send(connectedChannels[i], resp)
+	if (message.type == "message") {
+	    console.log("got msg:")
+	    console.log(message)
+	    console.log("")
+
+	    var resp =  message.data.clientid + ": " + message.data.textresponse
+	    for (var i = 0; i < connectedChannels.length; i++) {
+		send(connectedChannels[i], resp)
+	    }
+
+	} else {
+	    for (var i = 0; i < connectedChannels.length; i++) {
+		if (connectedChannels[i] == this) continue; //dont send to self
+		send(connectedChannels[i], message.data)
+	    }
+
 	}
+	
 
     });
+
     var id = Math.round((Math.random() * 1000))
-    send(ws, id, "idmsg")
+    var count = connectedChannels.length
+    send(ws, {idm: id, c: count}, "idmsg")
 });
 
 
